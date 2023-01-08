@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include <Types.h>
+#include <DataStructures/String.h>
 
 namespace Kolab
 {

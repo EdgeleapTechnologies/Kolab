@@ -1,12 +1,14 @@
 #pragma once
 
+#include <string>
+
 namespace Kolab
 {
 
 class string
 {
 private:
-    char* m_string = nullptr;
+    std::string m_string = "";
 public:
     string() = default;
     string(const char* string);
