@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
-#include "Renderer/Window.h"
+#include "DataStructures/ArrayView.h"
+//#include "Renderer/Window.h"
 
 int main(void)
 {
@@ -34,5 +35,6 @@ int main(void)
     }
 
     glfwTerminate();
+    
     return 0;
 }
