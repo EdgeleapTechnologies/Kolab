@@ -9,7 +9,7 @@ string::string(const char* string):m_string(string) {}
 string::string(const string& string):m_string(string.m_string) {}
 string::string(string&& string):m_string((std::string&&)string.m_string) {}
 
-const char* string::ptr() const
+char* const string::ptr() const
 {
     return this->m_string.data();
 }

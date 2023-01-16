@@ -17,7 +17,7 @@ public:
     string(string&& string);
     ~string() = default;
 
-    const char* ptr() const;
+    char* const ptr() const;
     char& operator[](uArchInt index);
     char at(uArchInt index) const;
     uArchInt length() const;
