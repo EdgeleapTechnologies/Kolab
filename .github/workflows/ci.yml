@@ -29,7 +29,7 @@ jobs:
       - name: Setup Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install llvm cmake ninja
+          sudo apt-get install llvm cmake ninja-build
         shell: bash
 
       - name: Build with LLVM
