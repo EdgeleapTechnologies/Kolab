@@ -29,10 +29,11 @@ jobs:
       - name: Setup Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang clang++ cmake ninja-build
+          sudo apt-get install -y llvm cmake ninja-build
         shell: bash
 
       - name: Build with LLVM
         run: |
+          clang --version
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh
