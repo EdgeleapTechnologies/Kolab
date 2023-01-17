@@ -34,4 +34,5 @@ jobs:
 
       - name: Build with LLVM
         run: |
+          sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh
