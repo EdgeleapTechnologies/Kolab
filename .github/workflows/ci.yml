@@ -28,13 +28,12 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Setup Build Dependencies
         run: |
-          sudo chdmod +x ./scripts/install_dependencies.sh
+          sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
 
       - name: Build with LLVM
         run: |
-          clang --version
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh
         shell: bash
