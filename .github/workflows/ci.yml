@@ -15,23 +15,29 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build-clang:
-    # The type of runner that the job will run on
+  style-check:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a set of commands using the runners shell
       - name: Setup Build Dependencies
         run: |
           sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
+      - name: Build with LLVM
+        run: |
+          python ./run-clang-format.py --style file -r Common Client Server --exclude ThirdParty
+        shell: bash
 
+  build-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bashs
       - name: Build with LLVM
         run: |
           sudo chmod +x ./scripts/build.sh
