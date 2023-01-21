@@ -137,7 +137,6 @@ def run_clang_format_diff(args, file):
         invocation = [args.clang_format_executable, file]
 
     if args.style:
-        print(args.style)
         invocation.extend(['--style', args.style])
 
     if args.dry_run:
