@@ -37,7 +37,7 @@ jobs:
         run: |
           sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
-        shell: bashs
+        shell: bash
       - name: Build with LLVM
         run: |
           sudo chmod +x ./scripts/build.sh
