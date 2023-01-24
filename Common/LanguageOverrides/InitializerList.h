@@ -13,11 +13,9 @@ private:
 
 public:
 #ifdef _MSC_VER
-    initializer_list(const Type* first, const Type* last)
-        :m_begin(first), m_end(last) {}
+    initializer_list(const Type* first, const Type* last): m_begin(first), m_end(last) {}
 #else
-    initializer_list(const Type* first, size_t len)
-        :m_begin(first), m_end(first + len) {}
+    initializer_list(const Type* first, size_t len): m_begin(first), m_end(first + len) {}
 #endif
 
     const Type* begin() const
