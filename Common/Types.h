@@ -39,3 +39,18 @@ typedef uint32 uArchInt;
 typedef int32 sArchInt;
 
 #endif
+
+//NOTE(Tiago): clang format is dogshit and for some reason it shits itself with
+//a class to an r-value not allowing any configuration of the style. To avoid this
+//we created here our own move implementation that casts to T&&. This way we can
+//use move without having to turn off the linter all over the place. Ideally
+//clang format would not be shit and would have this a configurable option, however
+//after spending much time looking into this it does not seem like such an option
+//exists.
+// clang-format off
+template<typename T>
+T&& move(T param) 
+{ 
+    return (T&&)param; 
+}
+// clang-format on

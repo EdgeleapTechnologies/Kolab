@@ -16,9 +16,11 @@ namespace Renderer
     public:
         uint32 width = 0;
         uint32 height = 0;
+
     private:
         GLFWwindow* m_window = nullptr;
         string test;
+
     public:
         Window();
     };

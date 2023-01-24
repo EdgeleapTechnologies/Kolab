@@ -32,8 +32,6 @@ public:
     {
         return m_end - m_begin;
     }
-
 };
 
 }
-
