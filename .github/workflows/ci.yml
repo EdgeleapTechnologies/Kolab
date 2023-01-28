@@ -77,12 +77,11 @@ jobs:
           args: -h
       - name: Setup Build Dependencies
         run: |
-          echo "VULKAN_SDK is $env:VULKAN_SDK"
           ./scripts/install_dependencies.ps1
-          reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
         shell: powershell
       - name: Build with LLVM
         run: |
+          refreshenv
           echo "VULKAN_SDK is $env:VULKAN_SDK"
           reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
           ./scripts/build.ps1
