@@ -78,8 +78,10 @@ jobs:
       - name: Setup Build Dependencies
         run: |
           ./scripts/install_dependencies.ps1
+          reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
         shell: powershell
       - name: Build with LLVM
         run: |
+          reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
           ./scripts/build.ps1
         shell: powershell
