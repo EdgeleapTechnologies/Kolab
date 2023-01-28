@@ -81,8 +81,7 @@ jobs:
         shell: powershell
       - name: Build with LLVM
         run: |
-          refreshenv
-          echo "VULKAN_SDK is $env:VULKAN_SDK"
+          $env:VULKAN_SDK = 'C:\VulkanSDK\1.2.182.0'
           reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
           ./scripts/build.ps1
         shell: powershell
