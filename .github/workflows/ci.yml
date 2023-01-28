@@ -71,6 +71,10 @@ jobs:
     needs: style-check
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: bash
       - name: Build with LLVM
         run: |
           ./scripts/build.ps1
