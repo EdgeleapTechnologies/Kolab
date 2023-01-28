@@ -68,7 +68,7 @@ jobs:
   build-msvc-windows:
     name: MSVC Windows Build Check
     runs-on: windows-latest
-    #needs: style-check
+    needs: style-check
     steps:
       - uses: actions/checkout@v3
       - 
