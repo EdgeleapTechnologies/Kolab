@@ -80,8 +80,8 @@ jobs:
           ./scripts/install_dependencies.ps1
         shell: powershell
       - name: Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
-          $env:VULKAN_SDK = 'C:\VulkanSDK\1.2.182.0'
-          reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v VULKAN_SDK
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
           ./scripts/build.ps1
         shell: powershell
