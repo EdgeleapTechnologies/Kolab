@@ -44,3 +44,19 @@ jobs:
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh
         shell: bash
+
+  build-gcc:
+    runs-on: ubuntu-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh
+        shell: bash
