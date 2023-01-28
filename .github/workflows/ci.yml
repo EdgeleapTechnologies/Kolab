@@ -71,14 +71,7 @@ jobs:
     needs: style-check
     steps:
       - uses: actions/checkout@v3
-      - name: Install Winget Package Manager
-        run: |
-          $ProgressPreference='Silent'
-          Invoke-WebRequest -Uri https://github.com/microsoft/winget-cli/releases/download/v1.3.2691/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -OutFile .\MicrosoftDesktopAppInstaller_8wekyb3d8bbwe.msixbundle
-          Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx
-          Add-AppxPackage Microsoft.VCLibs.x64.14.00.Desktop.appx
-          Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
-        shell: pwsh
+      - uses: crazy-max/ghaction-chocolatey@v2.1.0
       - name: Setup Build Dependencies
         run: |
           ./scripts/install_dependencies.ps1
