@@ -49,7 +49,7 @@ typedef int32 sArchInt;
 //exists.
 // clang-format off
 template<typename T>
-T&& move(T param) 
+inline T&& move(T param) 
 { 
     return (T&&)param; 
 }
