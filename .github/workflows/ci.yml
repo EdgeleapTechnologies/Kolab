@@ -70,7 +70,11 @@ jobs:
     runs-on: windows-latest
     needs: style-check
     steps:
-      - uses: actions/checkout@v3 crazy-max/ghaction-chocolatey@v2.1.0
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
       - name: Setup Build Dependencies
         run: |
           ./scripts/install_dependencies.ps1
