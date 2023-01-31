@@ -16,3 +16,4 @@ add_subdirectory(ThirdParty/Catch2/)
 #include our code, usually the configuration of these modules is done in their own cmakelists file
 add_subdirectory(Common)
 add_subdirectory(Client)
+add_subdirectory(test)
