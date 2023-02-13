@@ -4,7 +4,7 @@ file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
         ./**.h
         )
 
-add_executable(kolab-tests ${TEST_SOURCES})
+add_executable(kolab-tests EXCLUDE_FROM_ALL ${TEST_SOURCES})
 target_include_directories(kolab-tests PRIVATE ../ThirdParty/)
 target_link_libraries(kolab-tests PRIVATE Catch2::Catch2WithMain)
 
