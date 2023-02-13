@@ -3,16 +3,17 @@
 # clang is used as the default compiler
 CXX_COMPILER="clang++"
 C_COMPILER="clang"
-if [ $# -eq 1 ]; then
-    if [ "$1" = "--clang" ]; then
+for var in "$@"
+do
+    if [ "$var" = "--clang" ]; then
         C_COMPILER="clang"
         CXX_COMPILER="clang++"
     fi
-    if [ "$1" = "--gcc" ]; then
+    if [ "$var" = "--gcc" ]; then
         C_COMPILER="gcc"
         CXX_COMPILER="g++"
     fi
-fi
+done
 
 mkdir build
 mkdir build/linux-$C_COMPILER
