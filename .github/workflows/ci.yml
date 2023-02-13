@@ -31,7 +31,7 @@ jobs:
           ./scripts/lint.sh
         shell: bash
 
-#build check jobs
+#==== debug build check jobs =======================================
   linux-build-clang:
     name: Clang Ubuntu/Linux Build Check
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
           sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
-      - name: Build with LLVM
+      - name: Build with GCC
         run: |
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh --gcc
@@ -101,9 +101,88 @@ jobs:
         run: |
           ./scripts/install_dependencies.ps1
         shell: powershell
-      - name: Build with LLVM
+      - name: Build with MSVC
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
           ./scripts/build.ps1 --msvc
         shell: powershell
+#==== debug build check jobs end =======================================
+
+#==== debug test build check jobs =======================================
+  linux-test-build-clang:
+    name: Clang Tests Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: linux-build-clang
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --test-only
+        shell: bash
+
+  linux-test-build-gcc:
+    name: GCC Tests Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: linux-build-gcc
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --test-only
+        shell: bash
+
+  windows-test-build-clang:
+    name: Clang Tests Windows Build Check
+    runs-on: windows-latest
+    needs: windows-build-clang
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --test-only
+        shell: powershell
+
+  windows-test-build-msvc:
+    name: MSVC Tests Windows Build Check
+    runs-on: windows-latest
+    needs: windows-build-msvc
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Build with MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --test-only
+        shell: powershell
+#==== debug test build check jobs end =======================================
