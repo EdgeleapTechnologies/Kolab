@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# clang is used as the default compiler
 CXX_COMPILER="clang++"
 C_COMPILER="clang"
 if [ $# -eq 1 ]; then
@@ -13,7 +14,9 @@ if [ $# -eq 1 ]; then
     fi
 fi
 
-mkdir build-ninja
-cd build-ninja
-cmake -G Ninja -DCMAKE_C_COMPILER=$C_COMPILER -DCMAKE_CXX_COMPILER=$CXX_COMPILER ..
+mkdir build
+mkdir build/linux-$C_COMPILER
+cd build/linux-$C_COMPILER
+
+cmake -G Ninja -DCMAKE_C_COMPILER=$C_COMPILER -DCMAKE_CXX_COMPILER=$CXX_COMPILER ../..
 cmake --build .
