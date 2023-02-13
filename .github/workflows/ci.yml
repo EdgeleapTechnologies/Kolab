@@ -84,5 +84,26 @@ jobs:
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
-          ./scripts/build.ps1
+          ./scripts/build.ps1 --clang
+        shell: powershell
+
+  windows-build-msvc:
+    name: MSVC Windows Build Check
+    runs-on: windows-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc
         shell: powershell
