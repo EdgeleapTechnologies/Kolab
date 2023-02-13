@@ -32,6 +32,7 @@ if($args.count -gt 0)
     } 
 }
 
+#setup the build folder and run cmake generator
 if (-not (Test-Path -LiteralPath ./build/))
 {
     mkdir build > $null
@@ -43,6 +44,7 @@ if (-not (Test-Path -LiteralPath ./build/windows-$compiler_name)) {
     cd ../..
 }
 
+#build the targets
 cd ./build/windows-$compiler_name
 if($test_only -eq $false)
 {
@@ -54,6 +56,7 @@ if($build_test -eq $true)
 }
 $outcode = $LASTEXITCODE
 
+#post-build executions
 if (Test-Path -LiteralPath compile_commands.json) {
     cp compile_commands.json ../..
 }
