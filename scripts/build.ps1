@@ -4,6 +4,8 @@ cd ..
 $compiler_name="clang"
 $compiler="Clang"
 $generator="Ninja"
+$build_test=$false
+$test_only=$false
 if($args.count -gt 0)
 {
     for ( $i = 0; $i -lt $args.count; $i++ ) {
@@ -18,6 +20,13 @@ if($args.count -gt 0)
                 $generator="Visual Studio 17 2022"
                 $compiler_name="msvc"
                 $compiler="cl.exe"
+            }
+            "--test" {
+                $build_test=$true
+            }
+            "--test-only" {
+                $build_test=$true
+                $test_only=$true
             }
         }
     } 
@@ -35,7 +44,14 @@ if (-not (Test-Path -LiteralPath ./build/windows-$compiler_name)) {
 }
 
 cd ./build/windows-$compiler_name
-cmake --build . -j
+if($test_only -eq $false)
+{
+    cmake --build . -j
+}
+if($build_test -eq $true)
+{
+    cmake --build . -j --target kolab-tests
+}
 $outcode = $LASTEXITCODE
 
 if (Test-Path -LiteralPath compile_commands.json) {
