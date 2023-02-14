@@ -164,6 +164,10 @@ jobs:
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
           ./scripts/build.ps1 --clang --test-only
         shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-clang-test-executable
+          path: build/windows-clang/kolab-tests.exe
 
   windows-test-build-msvc:
     name: MSVC Tests Windows Build Check
@@ -185,4 +189,23 @@ jobs:
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
           ./scripts/build.ps1 --msvc --test-only
         shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-msvc-test-executable
+          path: build/windows-msvc/kolab-tests.exe
 #==== debug test build check jobs end =======================================
+
+#==== debug test executions ================================================
+  windows-clang-test:
+    name: Windows Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./build/windows-clang/kolab-tests.exe
+        shell: powershell
+#==== debug test executions end ============================================
