@@ -206,7 +206,6 @@ jobs:
           name: windows-clang-test-executable
       - name: Run Tets
         run: |
-          ls
-          kolab-tests.exe
+          ./kolab-tests.exe
         shell: powershell
 #==== debug test executions end ============================================
