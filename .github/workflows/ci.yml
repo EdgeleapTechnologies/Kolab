@@ -147,7 +147,7 @@ jobs:
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
     runs-on: windows-latest
-    needs: windows-build-clang
+    #needs: windows-build-clang
     steps:
       - uses: actions/checkout@v3
       - 
@@ -206,6 +206,7 @@ jobs:
           name: windows-clang-test-executable
       - name: Run Tets
         run: |
-          ./build/windows-clang/kolab-tests.exe
+          ls
+          kolab-tests.exe
         shell: powershell
 #==== debug test executions end ============================================
