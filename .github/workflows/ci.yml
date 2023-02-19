@@ -126,6 +126,10 @@ jobs:
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh --clang --test-only
         shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-clang-test-executable
+          path: build/linux-clang/kolab-tests
 
   linux-test-build-gcc:
     name: GCC Tests Ubuntu/Linux Build Check
@@ -143,6 +147,10 @@ jobs:
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh --gcc --test-only
         shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-gcc-test-executable
+          path: build/linux-gcc/kolab-tests
 
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
@@ -208,4 +216,43 @@ jobs:
         run: |
           ./kolab-tests.exe
         shell: powershell
+
+  windows-msvc-test:
+    name: Windows Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-msvc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-msvc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+
+  linux-clang-test:
+    name: Linux Clang Tests
+    runs-on: windows-latest
+    needs: linux-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests
+        shell: bash
+
+  linux-gcc-test:
+    name: Linux GCC Tests
+    runs-on: windows-latest
+    needs: linux-test-build-gcc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-gcc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests
+        shell: bash
 #==== debug test executions end ============================================
