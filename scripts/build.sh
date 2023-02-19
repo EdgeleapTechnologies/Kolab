@@ -35,7 +35,7 @@ fi
 if [ $BUILD_ONLY_TEST -eq $false ]; then
     cmake --build . -j
 fi
-if [ $BUILD_TESTS -eq $false ]; then
+if [ $BUILD_TESTS -eq $true ]; then
     cmake --build . -j --target kolab-tests
 fi
 
