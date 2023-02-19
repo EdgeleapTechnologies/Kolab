@@ -240,6 +240,7 @@ jobs:
           name: linux-clang-test-executable
       - name: Run Tets
         run: |
+          chmod +x ./kolab-tests
           ./kolab-tests
         shell: bash
 
@@ -253,6 +254,7 @@ jobs:
           name: linux-gcc-test-executable
       - name: Run Tets
         run: |
+          chmod +x ./kolab-tests
           ./kolab-tests
         shell: bash
 #==== debug test executions end ============================================
