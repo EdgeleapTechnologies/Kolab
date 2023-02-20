@@ -6,6 +6,8 @@ $compiler="Clang"
 $generator="Ninja"
 $build_test=$false
 $test_only=$false
+$build_type="Debug"
+$build_type_name="debug"
 if($args.count -gt 0)
 {
     for ( $i = 0; $i -lt $args.count; $i++ ) {
@@ -28,6 +30,14 @@ if($args.count -gt 0)
                 $build_test=$true
                 $test_only=$true
             }
+            "--release" {
+                $build_type="Release"
+                $build_type_name="release"
+            }
+            "--debug" {
+                $build_type="Debug"
+                $build_type_name="debug"
+            }
         }
     } 
 }
@@ -37,22 +47,22 @@ if (-not (Test-Path -LiteralPath ./build/))
 {
     mkdir build > $null
 }
-if (-not (Test-Path -LiteralPath ./build/windows-$compiler_name)) {
-    mkdir build/windows-$compiler_name > $null
-    cd build/windows-$compiler_name
-    cmake -G $generator -DCMAKE_C_COMPILER="$compiler" -DCMAKE_CXX_COMPILER="$compiler" ../..
+if (-not (Test-Path -LiteralPath ./build/windows-$compiler_name-$build_type_name)) {
+    mkdir build/windows-$compiler_name-$build_type_name > $null
+    cd build/windows-$compiler_name-$build_type_name
+    cmake -G $generator -DCMAKE_C_COMPILER="$compiler" -DCMAKE_CXX_COMPILER="$compiler" ../.. -DCMAKE_BUILD_TYPE="$build_type"
     cd ../..
 }
 
 #build the targets
-cd ./build/windows-$compiler_name
+cd ./build/windows-$compiler_name-$build_type_name
 if($test_only -eq $false)
 {
-    cmake --build . -j
+    cmake --build . -j --config $build_type
 }
 if($build_test -eq $true)
 {
-    cmake --build . -j --target kolab-tests
+    cmake --build . -j --target kolab-tests --config $build_type
 }
 $outcode = $LASTEXITCODE
 
