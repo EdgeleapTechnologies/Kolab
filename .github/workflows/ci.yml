@@ -383,3 +383,12 @@ jobs:
         shell: powershell
 #==== debug test executions end ============================================
 
+  static-analysis:
+    name: Code Static Analysis
+    runs-on: ubuntu-latest
+    needs: windows-release-msvc-test, windows-release-clang-test
+    steps:
+      - name: noop
+        run: |
+          ls
+        shell: bash
