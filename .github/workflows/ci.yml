@@ -143,15 +143,24 @@ jobs:
           sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
-      - name: Build with LLVM
+      - name: Debug Build with LLVM
         run: |
           sudo chmod +x ./scripts/build.sh
-          ./scripts/build.sh --clang --test-only
+          ./scripts/build.sh --clang --debug --test-only
+        shell: bash
+      - name: Release Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --release --test-only
         shell: bash
       - uses: actions/upload-artifact@v2
         with:
-          name: linux-clang-test-executable
+          name: linux-debug-clang-test-executable
           path: build/linux-clang-debug/kolab-tests
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-release-clang-test-executable
+          path: build/linux-clang-release/kolab-tests
 
   linux-test-build-gcc:
     name: GCC Tests Ubuntu/Linux Build Check
@@ -164,15 +173,24 @@ jobs:
           sudo chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
-      - name: Build with GCC
+      - name: Debug Build with GCC
         run: |
           sudo chmod +x ./scripts/build.sh
-          ./scripts/build.sh --gcc --test-only
+          ./scripts/build.sh --gcc --debug --test-only
+        shell: bash
+      - name: Release Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --release --test-only
         shell: bash
       - uses: actions/upload-artifact@v2
         with:
-          name: linux-gcc-test-executable
+          name: linux-debug-gcc-test-executable
           path: build/linux-gcc-debug/kolab-tests
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-release-gcc-test-executable
+          path: build/linux-gcc-release/kolab-tests
 
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
@@ -188,16 +206,28 @@ jobs:
         run: |
           ./scripts/install_dependencies.ps1
         shell: powershell
-      - name: Build with LLVM
+      - name: Debug Build with LLVM
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
-          ./scripts/build.ps1 --clang --test-only
+          ./scripts/build.ps1 --clang --debug --test-only
+        shell: powershell
+      - name: Release Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --release --test-only
         shell: powershell
       - uses: actions/upload-artifact@v2
         with:
-          name: windows-clang-test-executable
+          name: windows-debug-clang-test-executable
           path: build/windows-clang-debug/kolab-tests.exe
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-release-clang-test-executable
+          path: build/windows-clang-release/kolab-tests.exe
+          retention-days: 1
 
   windows-test-build-msvc:
     name: MSVC Tests Windows Build Check
@@ -213,69 +243,139 @@ jobs:
         run: |
           ./scripts/install_dependencies.ps1
         shell: powershell
-      - name: Build with MSVC
+      - name: Debug Build with MSVC
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
-          ./scripts/build.ps1 --msvc --test-only
+          ./scripts/build.ps1 --msvc --debug --test-only
+        shell: powershell
+      - name: Release Build with MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --release --test-only
         shell: powershell
       - uses: actions/upload-artifact@v2
         with:
-          name: windows-msvc-test-executable
+          name: windows-debug-msvc-test-executable
           path: build/windows-msvc-debug/kolab-tests.exe
-#==== debug test build check jobs end =======================================
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-release-msvc-test-executable
+          path: build/windows-msvc-release/kolab-tests.exe
+          retention-days: 1
+#==== test build check jobs end =======================================
 
 #==== debug test executions ================================================
-  windows-clang-test:
-    name: Windows Clang Tests
-    runs-on: windows-latest
-    needs: windows-test-build-clang
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: windows-clang-test-executable
-      - name: Run Tets
-        run: |
-          ./kolab-tests.exe
-        shell: powershell
-
-  windows-msvc-test:
-    name: Windows Clang Tests
-    runs-on: windows-latest
-    needs: windows-test-build-msvc
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: windows-msvc-test-executable
-      - name: Run Tets
-        run: |
-          ./kolab-tests.exe
-        shell: powershell
-
-  linux-clang-test:
-    name: Linux Clang Tests
+  linux-debug-clang-test:
+    name: Linux Debug Clang Tests
     runs-on: ubuntu-latest
     needs: linux-test-build-clang
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: linux-clang-test-executable
-      - name: Run Tets
-        run: |
-          ./kolab-tests
-        shell: bash
-
-  linux-gcc-test:
-    name: Linux GCC Tests
-    runs-on: ubuntu-latest
-    needs: linux-test-build-gcc
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: linux-gcc-test-executable
+          name: linux-debug-clang-test-executable
       - name: Run Tets
         run: |
           chmod +x ./kolab-tests
           ./kolab-tests
         shell: bash
+
+  linux-debug-gcc-test:
+    name: Linux Debug GCC Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-gcc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-debug-gcc-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  windows-debug-clang-test:
+    name: Windows Debug Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-debug-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+
+  windows-debug-msvc-test:
+    name: Windows Debug Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-msvc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-debug-msvc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
 #==== debug test executions end ============================================
+
+#==== release test executions ================================================
+  linux-release-clang-test:
+    name: Linux Release Clang Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-release-clang-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  linux-release-gcc-test:
+    name: Linux Release GCC Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-gcc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-release-gcc-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  windows-release-clang-test:
+    name: Windows Release Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-release-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+
+  windows-release-msvc-test:
+    name: Windows Release Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-msvc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-release-msvc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+#==== debug test executions end ============================================
+
