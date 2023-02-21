@@ -101,85 +101,13 @@ jobs:
         run: |
           ./scripts/install_dependencies.ps1
         shell: powershell
-      - name: Build with MSVC
+      - name: Debug Build With MSVC
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
-          ./scripts/build.ps1 --msvc
+          ./scripts/build.ps1 --msvc --debug
         shell: powershell
-#==== debug build check jobs end =======================================
-
-#==== release build check jobs =======================================
-  linux-build-clang-release:
-    name: Clang Ubuntu/Linux Release Build Check
-    runs-on: ubuntu-latest
-    needs: linux-build-clang
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Build Dependencies
-        run: |
-          sudo chmod +x ./scripts/install_dependencies.sh
-          ./scripts/install_dependencies.sh
-        shell: bash
-      - name: Build with LLVM
-        run: |
-          sudo chmod +x ./scripts/build.sh
-          ./scripts/build.sh --clang --release
-        shell: bash
-
-  linux-build-gcc-release:
-    name: GCC Ubuntu/Linux Release Build Check
-    runs-on: ubuntu-latest
-    needs: linux-build-gcc
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Build Dependencies
-        run: |
-          sudo chmod +x ./scripts/install_dependencies.sh
-          ./scripts/install_dependencies.sh
-        shell: bash
-      - name: Build with GCC
-        run: |
-          sudo chmod +x ./scripts/build.sh
-          ./scripts/build.sh --gcc --release
-        shell: bash
-
-  windows-build-clang-release:
-    name: Clang Windows Release Build Check
-    runs-on: windows-latest
-    needs: windows-build-clang
-    steps:
-      - uses: actions/checkout@v3
-      - 
-        uses: crazy-max/ghaction-chocolatey@v2.1.0
-        with:
-          args: -h
-      - name: Setup Build Dependencies
-        run: |
-          ./scripts/install_dependencies.ps1
-        shell: powershell
-      - name: Build with LLVM
-        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
-        run: |
-          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
-          ./scripts/build.ps1 --clang --release
-        shell: powershell
-
-  windows-build-msvc-release:
-    name: MSVC Windows Release Build Check
-    runs-on: windows-latest
-    needs: windows-build-msvc
-    steps:
-      - uses: actions/checkout@v3
-      - 
-        uses: crazy-max/ghaction-chocolatey@v2.1.0
-        with:
-          args: -h
-      - name: Setup Build Dependencies
-        run: |
-          ./scripts/install_dependencies.ps1
-        shell: powershell
-      - name: Build with MSVC
+      - name: Release Build With MSVC
         #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
         run: |
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
@@ -207,7 +135,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: linux-clang-test-executable
-          path: build/linux-clang-debug/kolab-tests
+          path: build/linux-clang/kolab-tests
 
   linux-test-build-gcc:
     name: GCC Tests Ubuntu/Linux Build Check
@@ -228,7 +156,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: linux-gcc-test-executable
-          path: build/linux-gcc-debug/kolab-tests
+          path: build/linux-gcc/kolab-tests
 
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
@@ -253,7 +181,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-clang-test-executable
-          path: build/windows-clang-debug/kolab-tests.exe
+          path: build/windows-clang/kolab-tests.exe
 
   windows-test-build-msvc:
     name: MSVC Tests Windows Build Check
@@ -278,7 +206,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-msvc-test-executable
-          path: build/windows-msvc-debug/kolab-tests.exe
+          path: build/windows-msvc/kolab-tests.exe
 #==== debug test build check jobs end =======================================
 
 #==== debug test executions ================================================
@@ -318,7 +246,6 @@ jobs:
           name: linux-clang-test-executable
       - name: Run Tets
         run: |
-          chmod +x ./kolab-tests
           ./kolab-tests
         shell: bash
 
