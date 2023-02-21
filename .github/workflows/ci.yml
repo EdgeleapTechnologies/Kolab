@@ -157,10 +157,12 @@ jobs:
         with:
           name: linux-debug-clang-test-executable
           path: build/linux-clang-debug/kolab-tests
+          retention-days: 1
       - uses: actions/upload-artifact@v2
         with:
           name: linux-release-clang-test-executable
           path: build/linux-clang-release/kolab-tests
+          retention-days: 1
 
   linux-test-build-gcc:
     name: GCC Tests Ubuntu/Linux Build Check
@@ -187,10 +189,12 @@ jobs:
         with:
           name: linux-debug-gcc-test-executable
           path: build/linux-gcc-debug/kolab-tests
+          retention-days: 1
       - uses: actions/upload-artifact@v2
         with:
           name: linux-release-gcc-test-executable
           path: build/linux-gcc-release/kolab-tests
+          retention-days: 1
 
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
