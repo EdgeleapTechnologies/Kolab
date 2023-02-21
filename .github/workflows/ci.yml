@@ -129,7 +129,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: linux-clang-test-executable
-          path: build/linux-clang/kolab-tests
+          path: build/linux-clang-debug/kolab-tests
 
   linux-test-build-gcc:
     name: GCC Tests Ubuntu/Linux Build Check
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: linux-gcc-test-executable
-          path: build/linux-gcc/kolab-tests
+          path: build/linux-gcc-debug/kolab-tests
 
   windows-test-build-clang:
     name: Clang Tests Windows Build Check
@@ -175,7 +175,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-clang-test-executable
-          path: build/windows-clang/kolab-tests.exe
+          path: build/windows-clang-debug/kolab-tests.exe
 
   windows-test-build-msvc:
     name: MSVC Tests Windows Build Check
@@ -200,7 +200,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: windows-msvc-test-executable
-          path: build/windows-msvc/kolab-tests.exe
+          path: build/windows-msvc-debug/kolab-tests.exe
 #==== debug test build check jobs end =======================================
 
 #==== debug test executions ================================================
