@@ -387,7 +387,13 @@ jobs:
     name: Code Static Analysis
     runs-on: ubuntu-latest
     needs: [
+      linux-debug-clang-test,
+      linux-release-clang-test,
+      linux-debug-gcc-test,
+      linux-release-gcc-test,
+      windows-debug-msvc-test,
       windows-release-msvc-test,
+      windows-debug-clang-test,
       windows-release-clang-test
     ]
     steps:
