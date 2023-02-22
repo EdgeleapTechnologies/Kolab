@@ -1,4 +1,4 @@
-Checks:          '*'
+Checks:          '*,-modernize*,-llvmlibc*,-altera*,-cppcoreguidelines*,-google-readability*,-llvm-include-order,-llvm-header-guard,-readability-redundant*,-readability-magic-numbers,-llvm-namespace-comment'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
