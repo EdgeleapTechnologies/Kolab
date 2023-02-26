@@ -413,6 +413,8 @@ jobs:
           name: linux-clang-debug-build-folder
       - name: noop
         run: |
+          mkdir build
+          mv ./linux-clang-debug ./build/
           sudo apt-get install clang-tidy
           clang-tidy --config-file=.clang-tidy .\Client\*
         shell: bash
