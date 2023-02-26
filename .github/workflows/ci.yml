@@ -53,6 +53,16 @@ jobs:
           sudo chmod +x ./scripts/build.sh
           ./scripts/build.sh --clang --release
         shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-clang-debug-build-folder
+          path: build/linux-clang-debug/
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-clang-release-build-folder
+          path: build/linux-clang-release/
+          retention-days: 1
 
   linux-build-gcc:
     name: GCC Ubuntu/Linux Build Check
@@ -397,7 +407,12 @@ jobs:
       windows-release-clang-test
     ]
     steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-clang-debug-build-folder
       - name: noop
         run: |
-          ls
+          apt-get install clang-tidy
+          clang-tidy --config-file=.clang-tidy .\Client\*
         shell: bash

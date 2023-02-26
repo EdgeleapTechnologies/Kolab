@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #TODO(Tiago): need to add check for the type of windowing system and install the corresponding dependencies
-sudo apt-get install -y llvm gcc g++ cmake ninja-build --fix-missing
+sudo apt-get install -y llvm gcc clang-tidy g++ cmake ninja-build --fix-missing
 
 #for x11 systems
 sudo apt-get update
