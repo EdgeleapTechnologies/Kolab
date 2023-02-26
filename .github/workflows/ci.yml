@@ -408,5 +408,6 @@ jobs:
       - name: noop
         run: |
           sudo apt-get install clang-tidy
+          ls
           clang-tidy --config-file=.clang-tidy .\Client\*
         shell: bash
