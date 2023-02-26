@@ -56,12 +56,12 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: linux-clang-debug-build-folder
-          path: build/linux-clang-debug/
+          path: build/linux-clang-debug
           retention-days: 1
       - uses: actions/upload-artifact@v2
         with:
           name: linux-clang-release-build-folder
-          path: build/linux-clang-release/
+          path: build/linux-clang-release
           retention-days: 1
 
   linux-build-gcc:
