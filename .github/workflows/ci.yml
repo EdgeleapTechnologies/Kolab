@@ -408,10 +408,12 @@ jobs:
           name: linux-clang-build-folder
       - name: Install Dependencies
         run: |
+          chmod +x ./scripts/install_dependencies.sh
           ./scripts/install_dependencies.sh
         shell: bash
       - name: Clang-Tidy Static Analysis
         run: |
+          chmod +x ./scripts/static-analysis.sh
           ./scripts/static-analysis.sh
         shell: bash
   
