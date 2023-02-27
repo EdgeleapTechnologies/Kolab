@@ -5,9 +5,9 @@
 namespace Kolab
 {
 
-string::string(const char* string):m_string(string) {}
-string::string(const string& string):m_string(string.m_string) {}
-string::string(string&& string):m_string((std::string&&)string.m_string) {}
+string::string(const char* string): m_string(string) {}
+string::string(const string& string): m_string(string.m_string) {}
+string::string(string&& string): m_string(move(string.m_string)) {}
 
 char* const string::ptr() const
 {

@@ -20,12 +20,13 @@ class ArrayView
 public:
     T* const array = nullptr;
     const uArchInt length = 0;
+
 public:
     ArrayView() = default;
 
-    ArrayView(T* array, uArchInt length):array(array), length(length) {}
+    ArrayView(T* array, uArchInt length): array(array), length(length) {}
 
-    ArrayView(const std::initializer_list<T>& array):array(array.begin()), length(array.size()) {}
+    ArrayView(const std::initializer_list<T>& array): array(array.begin()), length(array.size()) {}
 
     T& operator[](uArchInt index)
     {
@@ -41,7 +42,6 @@ public:
     {
         return this->array;
     }
-
 };
 
 }

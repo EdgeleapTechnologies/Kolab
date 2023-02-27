@@ -1,36 +1,444 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CI Pipeline
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "*" ]
+    branches: ['main', 'development', 'prototype']
   pull_request:
-    branches: [ "*" ]
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+  schedule:
+    - cron: "*/1 * * * *"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  style-check:
+    name: Clang-Format Code Style Check
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    if: '! github.event.pull_request.draft' 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Setup Build Dependencies
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/lint.sh
+          ./scripts/lint.sh
+        shell: bash
+
+#==== build check jobs =======================================
+  linux-build-clang:
+    name: Clang Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Debug Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --debug
+        shell: bash
+      - name: Release Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --release
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-clang-build-folder
+          path: .
+          retention-days: 1
+
+  linux-build-gcc:
+    name: GCC Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Debug Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --debug
+        shell: bash
+      - name: Release Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --release
+        shell: bash
+
+  windows-build-clang:
+    name: Clang Windows Build Check
+    runs-on: windows-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Debug Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --debug
+        shell: powershell
+      - name: Release Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --release
+        shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-clang-build-folder
+          path: .
+          retention-days: 1
+
+  windows-build-msvc:
+    name: MSVC Windows Build Check
+    runs-on: windows-latest
+    needs: style-check
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Debug Build With MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --debug
+        shell: powershell
+      - name: Release Build With MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --release
+        shell: powershell
+#==== build check jobs end =======================================
+
+#==== test build check jobs =======================================
+  linux-test-build-clang:
+    name: Clang Tests Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: linux-build-clang
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Debug Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --debug --test-only
+        shell: bash
+      - name: Release Build with LLVM
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --clang --release --test-only
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-debug-clang-test-executable
+          path: build/linux-clang-debug/kolab-tests
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-release-clang-test-executable
+          path: build/linux-clang-release/kolab-tests
+          retention-days: 1
+
+  linux-test-build-gcc:
+    name: GCC Tests Ubuntu/Linux Build Check
+    runs-on: ubuntu-latest
+    needs: linux-build-gcc
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Build Dependencies
+        run: |
+          sudo chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Debug Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --debug --test-only
+        shell: bash
+      - name: Release Build with GCC
+        run: |
+          sudo chmod +x ./scripts/build.sh
+          ./scripts/build.sh --gcc --release --test-only
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-debug-gcc-test-executable
+          path: build/linux-gcc-debug/kolab-tests
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: linux-release-gcc-test-executable
+          path: build/linux-gcc-release/kolab-tests
+          retention-days: 1
+
+  windows-test-build-clang:
+    name: Clang Tests Windows Build Check
+    runs-on: windows-latest
+    needs: windows-build-clang
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Debug Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --debug --test-only
+        shell: powershell
+      - name: Release Build with LLVM
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --clang --release --test-only
+        shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-debug-clang-test-executable
+          path: build/windows-clang-debug/kolab-tests.exe
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-release-clang-test-executable
+          path: build/windows-clang-release/kolab-tests.exe
+          retention-days: 1
+
+  windows-test-build-msvc:
+    name: MSVC Tests Windows Build Check
+    runs-on: windows-latest
+    needs: windows-build-msvc
+    steps:
+      - uses: actions/checkout@v3
+      - 
+        uses: crazy-max/ghaction-chocolatey@v2.1.0
+        with:
+          args: -h
+      - name: Setup Build Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Debug Build with MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --debug --test-only
+        shell: powershell
+      - name: Release Build with MSVC
+        #note: chocolatey doesnt set the vk sdk env var when it installs it for some reason, so we have to set it in order to build, ideally we would find a way around this in the future...
+        run: |
+          $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
+          ./scripts/build.ps1 --msvc --release --test-only
+        shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-debug-msvc-test-executable
+          path: build/windows-msvc-debug/kolab-tests.exe
+          retention-days: 1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-release-msvc-test-executable
+          path: build/windows-msvc-release/kolab-tests.exe
+          retention-days: 1
+#==== test build check jobs end =======================================
+
+#==== debug test executions ================================================
+  linux-debug-clang-test:
+    name: Linux Debug Clang Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-debug-clang-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  linux-debug-gcc-test:
+    name: Linux Debug GCC Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-gcc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-debug-gcc-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  windows-debug-clang-test:
+    name: Windows Debug Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-debug-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+
+  windows-debug-msvc-test:
+    name: Windows Debug Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-msvc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-debug-msvc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+#==== debug test executions end ============================================
+
+#==== release test executions ================================================
+  linux-release-clang-test:
+    name: Linux Release Clang Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-release-clang-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  linux-release-gcc-test:
+    name: Linux Release GCC Tests
+    runs-on: ubuntu-latest
+    needs: linux-test-build-gcc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-release-gcc-test-executable
+      - name: Run Tets
+        run: |
+          chmod +x ./kolab-tests
+          ./kolab-tests
+        shell: bash
+
+  windows-release-clang-test:
+    name: Windows Release Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-clang
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-release-clang-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+
+  windows-release-msvc-test:
+    name: Windows Release Clang Tests
+    runs-on: windows-latest
+    needs: windows-test-build-msvc
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-release-msvc-test-executable
+      - name: Run Tets
+        run: |
+          ./kolab-tests.exe
+        shell: powershell
+#==== debug test executions end ============================================
+
+  linux-static-analysis:
+    name: Linux Code Static Analysis
+    runs-on: ubuntu-latest
+    needs: [
+      linux-debug-clang-test,
+      linux-release-clang-test,
+      linux-debug-gcc-test,
+      linux-release-gcc-test,
+    ]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: linux-clang-build-folder
+      - name: Install Dependencies
+        run: |
+          chmod +x ./scripts/install_dependencies.sh
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Clang-Tidy Static Analysis
+        run: |
+          chmod +x ./scripts/static-analysis.sh
+          ./scripts/static-analysis.sh
+        shell: bash
+  
+  windows-static-analysis:
+    name: Windows Code Static Analysis
+    runs-on: windows-latest
+    needs: [
+      windows-debug-msvc-test,
+      windows-release-msvc-test,
+      windows-debug-clang-test,
+      windows-release-clang-test
+    ]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-clang-build-folder
+      - name: Install Dependencies
+        run: |
+          ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Clang-Tidy Static Analaysis
+        run: |
+          ./scripts/static-analysis.ps1
+        shell: powershell
+
