@@ -414,7 +414,7 @@ jobs:
   
   windows-static-analysis:
     name: Windows Code Static Analysis
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: [
       windows-debug-msvc-test,
       windows-release-msvc-test,
