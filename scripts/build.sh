@@ -1,4 +1,6 @@
 #!/bin/bash
+cd "$(dirname "$0")"
+cd ..
 
 # clang is used as the default compiler
 CXX_COMPILER="clang++"

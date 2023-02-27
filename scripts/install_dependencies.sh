@@ -1,4 +1,6 @@
 #!/bin/bash
+cd "$(dirname "$0")"
+cd ..
 
 #TODO(Tiago): need to add check for the type of windowing system and install the corresponding dependencies
 sudo apt-get install -y llvm gcc clang-tidy g++ cmake ninja-build --fix-missing

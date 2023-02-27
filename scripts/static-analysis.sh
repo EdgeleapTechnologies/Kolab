@@ -1,5 +1,8 @@
 #!/bin/bash
+cd "$(dirname "$0")"
+cd ..
 
-SOURCES=`find . -regextype posix-extended -regex '^.*(Client|Server|Common)(\/|\\).*(\.cpp|\.c|\.hpp|\.h)$'`
+SOURCES=`find . -regextype posix-extended -regex '^.*(Client|Server|Common)(\/).*(\.cpp|\.c|\.hpp|\.h)$'`
+SOURCES="$(echo "$SOURCES"|tr '\n' ' ')"
 
-echo "$SOURCES"
+clang-tidy --config-file=.clang-tidy $SOURCES
