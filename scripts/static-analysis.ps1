@@ -19,5 +19,5 @@ $common_sources+=get-ChildItem ./Common/ -recurse | Select-Object -Expand FullNa
 $common_sources+=" "
 $common_sources+=get-ChildItem ./Common/ -recurse | Select-Object -Expand FullName | where {$_ -like "*.hpp"}
 
-clang-tidy --config-file=.clang-tidy $client_sources
+Invoke-Expression "clang-tidy --config-file=.clang-tidy $client_sources $server_sources $common_sources"
 exit $LASTEXITCODE
