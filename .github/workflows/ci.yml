@@ -5,7 +5,7 @@ name: CI Pipeline
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  branches: [ "main", "development", "prototype" ]
+  branches: ['main', 'development', 'prototype']
   pull_request:
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
   schedule:
