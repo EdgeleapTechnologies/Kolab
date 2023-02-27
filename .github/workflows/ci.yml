@@ -406,10 +406,13 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: linux-clang-build-folder
-      - name: noop
+      - name: Install Dependencies
         run: |
-          sudo apt-get install clang-tidy
-          clang-tidy --config-file=.clang-tidy ./Client/*
+          ./scripts/install_dependencies.sh
+        shell: bash
+      - name: Clang-Tidy Static Analysis
+        run: |
+          ./scripts/static-analysis.sh
         shell: bash
   
   windows-static-analysis:
@@ -425,8 +428,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: windows-clang-build-folder
-      - name: noop
+      - name: Install Dependencies
         run: |
           ./scripts/install_dependencies.ps1
+        shell: powershell
+      - name: Clang-Tidy Static Analaysis
+        run: |
           ./scripts/static-analysis.ps1
         shell: powershell
+
