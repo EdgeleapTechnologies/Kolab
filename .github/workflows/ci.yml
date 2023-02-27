@@ -107,6 +107,11 @@ jobs:
           $env:VULKAN_SDK = Get-ItemPropertyValue 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' 'VULKAN_SDK'
           ./scripts/build.ps1 --clang --release
         shell: powershell
+      - uses: actions/upload-artifact@v2
+        with:
+          name: windows-clang-build-folder
+          path: .
+          retention-days: 1
 
   windows-build-msvc:
     name: MSVC Windows Build Check
@@ -388,18 +393,14 @@ jobs:
         shell: powershell
 #==== debug test executions end ============================================
 
-  static-analysis:
-    name: Code Static Analysis
+  linux-static-analysis:
+    name: Linux Code Static Analysis
     runs-on: ubuntu-latest
     needs: [
       linux-debug-clang-test,
       linux-release-clang-test,
       linux-debug-gcc-test,
       linux-release-gcc-test,
-      windows-debug-msvc-test,
-      windows-release-msvc-test,
-      windows-debug-clang-test,
-      windows-release-clang-test
     ]
     steps:
       - uses: actions/download-artifact@v2
@@ -408,6 +409,24 @@ jobs:
       - name: noop
         run: |
           sudo apt-get install clang-tidy
-          ls
           clang-tidy --config-file=.clang-tidy ./Client/*
         shell: bash
+  
+  windows-static-analysis:
+    name: Windows Code Static Analysis
+    runs-on: ubuntu-latest
+    needs: [
+      windows-debug-msvc-test,
+      windows-release-msvc-test,
+      windows-debug-clang-test,
+      windows-release-clang-test
+    ]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: windows-clang-build-folder
+      - name: noop
+        run: |
+          ./scripts/install_dependencies.ps1
+          ./scripts/static-analysis.ps1
+        shell: powershell
