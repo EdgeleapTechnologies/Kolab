@@ -48,9 +48,17 @@ typedef int32 sArchInt;
 //after spending much time looking into this it does not seem like such an option
 //exists.
 // clang-format off
-template<typename T>
-inline T&& move(T param) 
-{ 
-    return (T&&)param; 
+
+//NOTE(Tiago): for the love of god can this dumb language get nothing right? because
+//of the way they handle template argument deductions with references we have to do 
+//this hackery to make sure we get a reference to a reference on instantiation... 
+//so that we can properly convert to an r-value. ffs what a mess
+template<typename T> struct remove_reference      { typedef T type; };
+template<typename T> struct remove_reference<T&>  { typedef T type; };
+template<typename T> struct remove_reference<T&&> { typedef T type; };
+
+template<typename T> inline typename remove_reference<T>::type&& rmove(T&& param) noexcept 
+{
+    return static_cast<typename remove_reference<T>::type&&>(param);
 }
 // clang-format on

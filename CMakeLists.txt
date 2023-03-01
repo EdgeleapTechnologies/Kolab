@@ -26,6 +26,10 @@ add_subdirectory(ThirdParty/GLFW/)
 add_subdirectory(ThirdParty/Catch2/ EXCLUDE_FROM_ALL)
 
 #include our code, usually the configuration of these modules is done in their own cmakelists file
-add_subdirectory(Common)
+file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS 
+        ./Common/**.cpp
+        ./Common/**.hpp
+        ./Common/**.h
+        )
 add_subdirectory(Client)
 add_subdirectory(test)
