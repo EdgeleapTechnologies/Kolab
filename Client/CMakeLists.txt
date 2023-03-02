@@ -7,6 +7,7 @@ file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS
         **.h
         )
 
+message("${COMMON_SOURCES}")
 add_executable(${PROJECT_NAME}-client ${CLIENT_SOURCES} ${COMMON_SOURCES})
 target_include_directories(${PROJECT_NAME}-client
     PUBLIC ${GLFW_INCLUDE_DIRS}

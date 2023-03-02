@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 //NOTE(Tiago): This can only be used once we remove all uses of std;
 namespace std
 {
